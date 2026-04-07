@@ -14,8 +14,8 @@ Route::get('/', function () {
 Route::get('/produto/listar',[ProdutoController::class, 'listar'])->name('produto.listar');
 
 Route::get('/produto/cadastrar', function(){
-    return view('cadastro');
-})->name('produto.cadastro');
+    return view('cadastrar');
+})->name('produto.cadastrar');
 
 Route::post('/produto/salvar',[ProdutoController::class, 'add'])->name('produto.salvar');
 
