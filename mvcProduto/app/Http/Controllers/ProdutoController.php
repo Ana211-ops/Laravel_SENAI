@@ -1,63 +1,93 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Produto;
 
+use App\Models\Produto;
+use App\Models\Setor;
+use App\Models\DetalheProduto;
 use Illuminate\Http\Request;
 
-class ProdutoController extends Controller
-{
+class ProdutoController extends Controller{
+
     public function listar(){
-        $query = Produto::query();
-        $Produto = $query->get();
-        return view('listar', compact('Protudo'));
+        $produtos = Produto::with(['setor','detalhe'])->get();
+        return view('listar', compact('produtos'));
+    }
+
+    public function create(){
+        $setores = Setor::all();
+        return view('cadastro', compact('setores'));
     }
 
     public function add(Request $request){
+
         $request->validate([
-            'nome' => 'require|string|max:255',
-            'id' => 'require|string|max:255|unique:nome,id',
-            'preço' => 'require|string|max:255|unique:nome,id, preço'
+            'nome' => 'required|string|max:255',
+            'quantidade' => 'required|string|max:255',
+            'preco' => 'required|string|max:255',
+            'descricao' => 'required|string|max:255',
+            'tamanho' => 'required|string|max:255',
+            'peso' => 'required|numeric|max:255',
+            'setor_id' => 'required|exists:setores,id'
         ]);
 
+        $detalhe = DetalheProduto::create([
+            'descricao' => $request->descricao,
+            'tamanho' => $request->tamanho,
+            'peso' => $request->peso,
+        ]);
 
-
-        produto::create([
+        Produto::create([
             'nome' => $request->nome,
-            'id' => $request->id
-            'preço' => $request->preço
+            'quantidade' => $request->quantidade,
+            'preco' => $request->preco,
+            'setor_id' => $request->setor_id,
+            'detalhes_id' => $detalhe->id
         ]);
 
-        return redirect()->back()->with('success','Produto Cadastrado com sucesso!');
+        return redirect()->back()->with('success','Produto cadastrado com sucesso!');
     }
 
-    
     public function atualizar($id){
-        $Produto = Produto::findOrFail($id);
-        return view('atualizar', compact('Produto'));
+        $produto = Produto::with('detalhe')->findOrFail($id);
+        $setores = Setor::all();
+        return view('atualizar', compact('produto','setores'));
     }
 
     public function update(Request $request, $id){
+
         $request->validate([
             'nome' => 'required|string|max:255',
-            'id' => "required|string|max:255|unique:nome,id, $id",
-            'preço' => "required|string|max:255|unique:nome,id,preço $id"
+            'quantidade' => 'required|string|max:255',
+            'preco' => 'required|string|max:255',
+            'descricao' => 'required|string|max:255',
+            'tamanho' => 'required|string|max:255',
+            'peso' => 'required|numeric|max:255'
         ]);
 
-        $setor = Produto::findOrFail($id);
+        $produto = Produto::findOrFail($id);
 
-        $Produto->nome = $request->nome;
-        $Produto->id = $request->id;
+        // atualiza produto
+        $produto->update([
+            'nome' => $request->nome,
+            'quantidade' => $request->quantidade,
+            'preco' => $request->preco,
+        ]);
 
-        $Produto->save();
-        return redirect()->back()->with('success','produto atualizado com sucesso');
+        // atualiza detalhe
+        $produto->detalhe->update([
+            'descricao' => $request->descricao,
+            'tamanho' => $request->tamanho,
+            'peso' => $request->peso,
+        ]);
+
+        return redirect()->back()->with('success','Produto atualizado com sucesso!');
     }
 
     public function deletar($id){
-        $Produto = produto::findOrFail($id);
-        $Produto->delete();
+        $produto = Produto::findOrFail($id);
+        $produto->delete();
 
-        return redirect()->route('produto.listar')
-            ->with('succes','produto excluido com sucesso!');
+        return redirect()->route('produto.listar')->with('success','Produto excluído com sucesso!');
     }
 }

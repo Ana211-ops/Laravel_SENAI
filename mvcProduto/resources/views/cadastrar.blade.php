@@ -1,37 +1,55 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_','-',app()->getLocale())}}">
+<html lang="{{ str_replace('_','-',app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro Produtos</title>
+    <title>Cadastro de Produtos</title>
 </head>
 <body>
-    <h1>Cadastro Produtos</h1>
+    <h1>Cadastro de Produtos</h1>
 
     @if(session('success'))
         <p style="color:green">{{ session('success')}}</p>
     @endif
 
-    
-    <form action="{{route('produto.salvar')}}" method="POST">
+    <form action="{{ route('produto.salvar') }}" method="POST">
         @csrf
-        <label for="nome">nome:</label>
-        <input type="numer" name="nome" id="id" placeholder="nome..." require value="{{ old('nome')}}">
-        <br></br>
-        <label for="preço">preço:</label>
-        <input type="numer" name="preço" id="preço" placeholder="preço..." require value="{{ old('preço')}}">
-        <br></br>
-        <label for="creatd_at">creatd_at:</label>
-        <input type="numer" name="creatd_at" id="creatd_at" placeholder="creatd_at..." require value="{{ old('creatd_at')}}">
-        <br></br>
-        <label for="updated_at">updated_at:</label>
-        <input type="numer" name="updated_at" id="updated_at" placeholder="updated_at..." require value="{{ old('updated_at')}}">
-        <br></br>
-        <label for="id">id:</label>
-        <input type="number" name="id" id="id" placeholder="id..." require value="{{ old('id')}}">
+        <label for="nome">Nome:</label>
+        <input type="text" name="nome" id="nome" placeholder="Produto..." require value="{{old('nome')}}">
+        <br><br>
+
+        <label for="qntd">Quantidade:</label>
+        <input type="text" name="quantidade" id="quantidade" placeholder="Quantidade..." require value="{{old('quantidade')}}">
+        <br><br>
+
+        <label for="qntd">Preço:</label>
+        <input type="text" name="preco" id="preco" placeholder="Preço..." require value="{{old('preco')}}">
+        <br><br>
+
+        <label for="descricao">Descrição do Produto:</label>
+        <input type="textarea" name="descricao" id="descricao" placeholder="Descrição do Produto..." require value="{{old('descricao')}}">
+        <br><br>
+
+        <label for="tamanho">Tamanho do Produto:</label>
+        <input type="text" name="tamanho" id="tamanho" placeholder="Tamanho do Produto..." require value="{{old('tamanho')}}">
+        <br><br>
+
+        <label for="tamanho">Peso do Produto:</label>
+        <input type="text" name="peso" id="peso" placeholder="Peso do Produto..." require value="{{old('peso')}}">
+        <br><br>
+
+        <label for="setor_id">Setor:</label>
+        <select name="setor_id" id="setor_id" required>
+            <option value="" disabled selected>Selecione um Setor</option>
+
+            @foreach ($setores as $setor)
+                <option value="{{ $setor->id }}">
+                    Setor - {{ $setor->nome }} - N° {{ $setor->nCorredor }}
+                </option>
+            @endforeach
+        </select>
+        
         <input type="submit" value="Cadastrar">
-
-
     </form>
 
     @if($errors->any())
@@ -42,6 +60,7 @@
                 @endforeach
             </ul>
 
-            @endif
+        </div>
+    @endif
 </body>
 </html>
